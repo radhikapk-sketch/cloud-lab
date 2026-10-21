@@ -1,0 +1,297 @@
+npm create vite@latest job-portal-firebase -- --template react
+cd job-portal-firebase
+npm install
+npm install firebase
+npm install -g firebase-tools
+
+
+firebase.js
+-----------------------------------------------
+
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+------------------------------------------------------
+app.jsx
+--------------------------------------------------------
+
+import { useEffect, useState } from "react";
+import { auth, db } from "./firebase";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from "firebase/auth";
+import {
+  collection, addDoc, getDocs, updateDoc,
+  deleteDoc, doc, query, orderBy
+} from "firebase/firestore";
+import "./App.css";
+
+export default function App() {
+  const [user, setUser] = useState(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [jobs, setJobs] = useState([]);
+  const [title, setTitle] = useState("");
+  const [company, setCompany] = useState("");
+  const [editId, setEditId] = useState(null);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    return onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (user) loadJobs();
+    else setJobs([]);
+  }, [user]);
+
+  async function login(register = false) {
+    try {
+      if (register) {
+        await createUserWithEmailAndPassword(auth, email, password);
+        setMessage("Registration successful!");
+      } else {
+        await signInWithEmailAndPassword(auth, email, password);
+        setMessage("Login successful!");
+      }
+    } catch (error) {
+      setMessage(error.message);
+    }
+  }
+
+  async function loadJobs() {
+    try {
+      const result = await getDocs(
+        query(collection(db, "jobs"), orderBy("createdAt", "desc"))
+      );
+      setJobs(result.docs.map(item => ({
+        id: item.id, ...item.data()
+      })));
+    } catch (error) {
+      setMessage(error.message);
+    }
+  }
+
+  async function saveJob(e) {
+    e.preventDefault();
+    try {
+      const job = { title, company };
+
+      if (editId) {
+        await updateDoc(doc(db, "jobs", editId), job);
+        setMessage("Job updated!");
+      } else {
+        await addDoc(collection(db, "jobs"), {
+          ...job,
+          createdAt: Date.now(),
+          userId: user.uid
+        });
+        setMessage("Job added!");
+      }
+
+      setTitle("");
+      setCompany("");
+      setEditId(null);
+      loadJobs();
+    } catch (error) {
+      setMessage(error.message);
+    }
+  }
+
+  async function removeJob(id) {
+    try {
+      await deleteDoc(doc(db, "jobs", id));
+      setMessage("Job deleted!");
+      loadJobs();
+    } catch (error) {
+      setMessage(error.message);
+    }
+  }
+
+  function editJob(job) {
+    setEditId(job.id);
+    setTitle(job.title);
+    setCompany(job.company);
+  }
+
+  if (!user) {
+    return (
+      <main className="container">
+        <h1>Job Portal</h1>
+        <h3>Firebase Authentication</h3>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password (minimum 6 characters)"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+        />
+        <button onClick={() => login(false)}>Login</button>
+        <button onClick={() => login(true)}>Register</button>
+        <p>{message}</p>
+      </main>
+    );
+  }
+
+  return (
+    <main className="container">
+      <h1>Job Portal</h1>
+      <p>Logged in as: {user.email}</p>
+      <button onClick={() => signOut(auth)}>Logout</button>
+
+      <h2>{editId ? "Update Job" : "Add Job"}</h2>
+      <form onSubmit={saveJob}>
+        <input
+          placeholder="Job title"
+          value={title}
+          onChange={e => setTitle(e.target.value)}
+          required
+        />
+        <input
+          placeholder="Company name"
+          value={company}
+          onChange={e => setCompany(e.target.value)}
+          required
+        />
+        <button type="submit">
+          {editId ? "Update Job" : "Add Job"}
+        </button>
+        {editId && (
+          <button type="button" onClick={() => {
+            setEditId(null);
+            setTitle("");
+            setCompany("");
+          }}>
+            Cancel
+          </button>
+        )}
+      </form>
+
+      <p>{message}</p>
+      <h2>Available Jobs</h2>
+      {jobs.map(job => (
+        <div className="job" key={job.id}>
+          <h3>{job.title}</h3>
+          <p>{job.company}</p>
+          <button onClick={() => editJob(job)}>Edit</button>
+          <button onClick={() => removeJob(job.id)}>Delete</button>
+        </div>
+      ))}
+    </main>
+  );
+}
+--------------------------------------------------------------------
+app.css
+------------------------
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f0f4ff;
+  color: #222;
+}
+
+.container {
+  max-width: 750px;
+  margin: 40px auto;
+  padding: 25px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px #ccd3e0;
+}
+
+h1 {
+  color: #2456a6;
+}
+
+input {
+  display: block;
+  width: 95%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  padding: 10px 16px;
+  margin: 5px;
+  background: #2456a6;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #173b78;
+}
+
+.job {
+  border: 1px solid #ddd;
+  padding: 12px;
+  margin: 12px 0;
+  border-radius: 8px;
+}
+----------------------------------------
+rules for firestore
+--------------------------------------
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /jobs/{jobId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+---------------------------------------------
+for hosting
+-------------------
+npm run build
+firebase login
+firebase init hosting
+firebase deploy --only hosting
+
+Select your existing JobPortalLab Firebase project.
+
+
+
+Set the public directory to dist.
+
+
+
+Configure as a single-page app: Yes.
+
+
+
+Set up automatic builds and deploys with GitHub: No.
+
+
+
+If asked whether to overwrite dist/index.html, answer No.

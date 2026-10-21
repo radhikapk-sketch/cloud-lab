@@ -1,0 +1,139 @@
+command1
+----------------------------------------------------------------------
+base64 -d <<'E' | gunzip > ~/spark_setup.sh && bash ~/spark_setup.sh
+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
+E
+
+--------------------------------------
+if timeout error
+-----------------------------------------------------
+pkill -f spark-shell 2>/dev/null; sed -i 's/timeout 400 /timeout --foreground 400 /' ~/spark_setup.sh && bash ~/spark_setup.sh
+-------------------------------------
+without compression
+-------------------------------------------------
+cat > ~/spark_wc.sh <<'SCRIPT'
+main() {
+set -u
+say(){ printf '\n\033[1;36m==> %s\033[0m\n' "$*"; }
+ok(){ printf '\033[1;32m[OK]\033[0m %s\n' "$*"; }
+die(){ printf '\n\033[1;31m[FAILED]\033[0m %s\n' "$*" >&2; exit 1; }
+valid_root(){ [ -x "$1/bin/spark-shell" ] && [ -x "$1/bin/spark-submit" ] && ls "$1"/jars/spark-core_*.jar >/dev/null 2>&1; }
+find_spark(){
+local c r
+while IFS= read -r c; do
+case "$c" in *site-packages*|*dist-packages*) continue;; esac
+r=$(dirname "$(dirname "$(readlink -f "$c")")")
+if valid_root "$r"; then echo "$r"; return 0; fi
+done < <(find / \( -path /proc -o -path /sys -o -path /dev -o -path /run -o -path /snap -o -path /var/lib/docker \) -prune -o -name spark-shell \( -type f -o -type l \) -path '*/bin/spark-shell' -print 2>/dev/null)
+return 1
+}
+say "Locating Spark"
+SH=""
+if [ -n "${SPARK_HOME:-}" ] && valid_root "$SPARK_HOME"; then SH="$SPARK_HOME"; else SH=$(find_spark); fi
+[ -n "$SH" ] || die "No valid Spark installation found. Run COMMAND 1 first."
+SH=$(readlink -f "$SH")
+VER=$(ls "$SH"/jars/spark-core_*.jar | head -1 | sed -E 's/.*spark-core_[0-9.]+-([0-9][0-9.]*)\.jar/\1/')
+case "$VER" in 4.*) JL="17 21";; *) JL="17 11 1\.8 21";; esac
+java_ok(){ [ -x "$1/bin/java" ] && "$1/bin/java" -version 2>&1 | grep -Eq "version \"$2[.\"_]"; }
+find_java(){
+local p d
+for p in $JL; do
+for d in "${JAVA_HOME:-}" /usr/lib/jvm/*; do
+if [ -n "$d" ] && java_ok "$d" "$p"; then readlink -f "$d"; return 0; fi
+done
+done
+return 1
+}
+JH=$(find_java)
+[ -n "$JH" ] || die "No Java compatible with Spark $VER found. Run COMMAND 1 first."
+export JAVA_HOME="$JH" SPARK_HOME="$SH" SPARK_LOCAL_IP=127.0.0.1
+export PATH="$SH/bin:$SH/sbin:$JH/bin:$PATH"
+ok "Spark $VER at $SH"
+ok "Java at $JH"
+say "Creating input file"
+D="$HOME/spark_lab"; mkdir -p "$D"
+printf 'Radhika studies Spark\nSpark runs Scala\nRadhika learns Scala\n' > "$D/input.txt"
+cat "$D/input.txt"
+cat > "$D/WordCount.scala" <<'EOF'
+val lines = sc.textFile("file://" + sc.getConf.get("spark.lab.input"))
+val counts = lines.flatMap(_.split("\\s+")).filter(_.nonEmpty).map(w => (w, 1)).reduceByKey(_ + _).sortByKey()
+counts.collect().foreach { case (w, n) => println("RES|" + w + "|" + n) }
+sys.exit(0)
+EOF
+say "Scala WordCount program"
+cat "$D/WordCount.scala"
+say "Running on Spark (RDD WordCount)"
+"$SH/bin/spark-shell" --master 'local[*]' --conf spark.ui.enabled=false --conf spark.driver.bindAddress=127.0.0.1 --conf spark.driver.host=127.0.0.1 --conf spark.lab.input="$D/input.txt" -i "$D/WordCount.scala" </dev/null >"$D/run.log" 2>&1
+GOT=$(grep -E '^RES\|[^|]+\|[0-9]+$' "$D/run.log" | LC_ALL=C sort)
+if [ -z "$GOT" ]; then tail -n 40 "$D/run.log"; die "Spark job produced no output (log above, full log: $D/run.log)."; fi
+say "FINAL OUTPUT (word : count)"
+printf '%s\n' "$GOT" | awk -F'|' '{printf "%-10s : %s\n",$2,$3}'
+EXP=$(printf 'RES|Radhika|2\nRES|Scala|2\nRES|Spark|2\nRES|learns|1\nRES|runs|1\nRES|studies|1\n' | LC_ALL=C sort)
+[ "$GOT" = "$EXP" ] || die "Output does not match the expected counts (full log: $D/run.log)."
+printf '\n\033[1;32mSUCCESS: Spark Scala WordCount completed and output matches the expected counts.\033[0m\n'
+}
+main </dev/null
+SCRIPT
+bash ~/spark_wc.sh
+-----------------------------------------------------------------
+with compression
+----------------------------------------------------------
+base64 -d <<'E' | gunzip > ~/spark_wc.sh && bash ~/spark_wc.sh
+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
+E
+----------------------------------------------------------------
+after these 2 execute or 1st command execute 
+
+
+source ~/.bashrc
+nano ~/input.txt
+spark-shell

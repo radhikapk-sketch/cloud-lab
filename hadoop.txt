@@ -1,0 +1,108 @@
+setup and wordcount
+ 
+1a
+-----------------------------------------------------------------------
+
+cat > ~/.h1a <<'E'
+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
+E
+-----------------------------------------------------
+1b
+----------------------------------------------------
+cat > ~/.h1b <<'E'
+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
+E
+cat ~/.h1a ~/.h1b | base64 -d | gunzip > ~/hadoop_start.sh && rm -f ~/.h1a ~/.h1b && bash ~/hadoop_start.sh
+-------------------------------------------------------------------
+2
+----------------------------------------------------------------
+base64 -d <<'E' | gunzip > ~/hadoop_wc.sh && bash ~/hadoop_wc.sh
+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
+E
+------------------------------------------------------------------
+---------------------------------------------------------------------
+last la execute
+-----------------------------------------------------------------------
+source ~/.bashrc                      # makes hadoop/hdfs/yarn commands available in this terminal
+stop-yarn.sh; stop-dfs.sh             # only if the daemons are already running from setup
+start-dfs.sh
+start-yarn.sh
+jps                                   # shows NameNode, DataNode, ResourceManager, NodeManager
+nano ~/input.txt                      # type the professor's text
+hdfs dfs -mkdir -p /user/$USER/input
+hdfs dfs -put -f ~/input.txt /user/$USER/input/
+hdfs dfs -rm -r -f /user/$USER/output
+hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.3.6.jar wordcount /user/$USER/input /user/$USER/output
+hdfs dfs -cat /user/$USER/output/part-r-00000

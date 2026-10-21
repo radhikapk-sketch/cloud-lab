@@ -1,0 +1,59 @@
+this is the recovery code: GRKZUEHENV1WPFM4J7HG84AL
+
+npm create vite@latest auth0-test -- --template react
+cd auth0-test
+npm install
+npm install @auth0/auth0-react
+ 
+if any error
+
+ npm uninstall @auth0/auth0-react and npm install @auth0/auth0-react --registry=https://registry.npmjs.org/
+------------------------------
+main/jsx
+
+
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { Auth0Provider } from "@auth0/auth0-react";
+import App from "./App";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <Auth0Provider
+    domain="dev-jbwa7gg2gtz10zs1.us.auth0.com"
+    clientId="J6gVMq7IY6Qod287Sh6BrKm1niLi3eQv"
+    authorizationParams={{
+      redirect_uri: window.location.origin
+    }}
+  >
+    <App />
+  </Auth0Provider>
+);
+
+------------------------------------------------------
+app.jsx
+
+
+import { useAuth0 } from "@auth0/auth0-react";
+
+export default function App() {
+  const { loginWithRedirect, logout, isAuthenticated, user, isLoading } =
+    useAuth0();
+
+  if (isLoading) return <h2>Loading...</h2>;
+
+  return (
+    <div style={{ textAlign: "center", marginTop: 100 }}>
+      <h1>Auth0 Login Test</h1>
+      {isAuthenticated ? (
+        <>
+          <h3>Welcome, {user.name}</h3>
+          <button onClick={() => logout({
+            logoutParams: { returnTo: window.location.origin }
+          })}>Logout</button>
+        </>
+      ) : (
+        <button onClick={() => loginWithRedirect()}>Login with Auth0</button>
+      )}
+    </div>
+  );
+}

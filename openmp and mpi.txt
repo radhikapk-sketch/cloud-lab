@@ -1,0 +1,214 @@
+IMPORTANT
+1. Install the required packages once.
+2. Run each program from the folder where its .c file is saved.
+3. Save nano files using Ctrl+O, Enter, Ctrl+X.
+4. Parallel thread/process output order may vary.
+5. MPI examples below use 4 processes.
+
+SECTION 1: INSTALLATION (RUN ONCE)
+----------------------------------
+sudo apt update && sudo apt install -y build-essential gcc libomp-dev openmpi-bin libopenmpi-dev
+
+Verify:
+gcc --version
+mpicc --version
+mpirun --version
+
+Create a working folder:
+mkdir -p ~/parallel-lab
+cd ~/parallel-lab
+
+
+SECTION 2: OPENMP PROGRAM 1 — DISPLAY THREAD IDS
+------------------------------------------------
+Create:
+nano omp1.c
+
+Code:
+#include <stdio.h>
+#include <omp.h>
+
+int main(void) {
+    #pragma omp parallel
+    {
+        printf("Hello from thread %d\\n", omp_get_thread_num());
+    }
+    return 0;
+}
+
+Compile and run:
+gcc -fopenmp omp1.c -o omp1 && OMP_NUM_THREADS=4 ./omp1
+
+Expected output (order may vary):
+Hello from thread 0
+Hello from thread 1
+Hello from thread 2
+Hello from thread 3
+
+
+SECTION 3: OPENMP PROGRAM 2 — SUM FROM 1 TO 10
+----------------------------------------------
+Create:
+nano omp2.c
+
+Code:
+#include <stdio.h>
+#include <omp.h>
+
+int main(void) {
+    int sum = 0;
+    #pragma omp parallel for reduction(+:sum)
+    for (int i = 1; i <= 10; i++) {
+        sum += i;
+    }
+    printf("Sum = %d\\n", sum);
+    return 0;
+}
+
+Compile and run:
+gcc -fopenmp omp2.c -o omp2 && ./omp2
+
+Expected output:
+Sum = 55
+
+
+SECTION 4: OPENMP PROGRAM 3 — SQUARE ARRAY ELEMENTS
+---------------------------------------------------
+Create:
+nano omp3.c
+
+Code:
+#include <stdio.h>
+#include <omp.h>
+
+int main(void) {
+    int a[5] = {1, 2, 3, 4, 5};
+    int b[5];
+
+    #pragma omp parallel for
+    for (int i = 0; i < 5; i++) {
+        b[i] = a[i] * a[i];
+    }
+
+    printf("Squares: ");
+    for (int i = 0; i < 5; i++) {
+        printf("%d ", b[i]);
+    }
+    printf("\\n");
+    return 0;
+}
+
+Compile and run:
+gcc -fopenmp omp3.c -o omp3 && ./omp3
+
+Expected output:
+Squares: 1 4 9 16 25
+
+
+SECTION 5: MPI PROGRAM 1 — DISPLAY PROCESS IDS
+----------------------------------------------
+Create:
+nano mpi1.c
+
+Code:
+#include <stdio.h>
+#include <mpi.h>
+
+int main(int argc, char *argv[]) {
+    int rank, size;
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    printf("Hello from process %d of %d\\n", rank, size);
+
+    MPI_Finalize();
+    return 0;
+}
+
+Compile and run:
+mpicc mpi1.c -o mpi1 && mpirun --oversubscribe -np 4 ./mpi1
+
+Expected output (order may vary):
+Hello from process 0 of 4
+Hello from process 1 of 4
+Hello from process 2 of 4
+Hello from process 3 of 4
+
+
+SECTION 6: MPI PROGRAM 2 — SUM USING MPI_REDUCE
+-----------------------------------------------
+Each process contributes rank + 1. With 4 processes: 1+2+3+4 = 10.
+
+Create:
+nano mpi2.c
+
+Code:
+#include <stdio.h>
+#include <mpi.h>
+
+int main(int argc, char *argv[]) {
+    int rank, local, sum;
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    local = rank + 1;
+    MPI_Reduce(&local, &sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    if (rank == 0) {
+        printf("Sum = %d\\n", sum);
+    }
+
+    MPI_Finalize();
+    return 0;
+}
+
+Compile and run:
+mpicc mpi2.c -o mpi2 && mpirun --oversubscribe -np 4 ./mpi2
+
+Expected output:
+Sum = 10
+
+
+SECTION 7: MPI PROGRAM 3 — MAXIMUM USING MPI_REDUCE
+---------------------------------------------------
+Each process contributes (rank + 1) * 10. With 4 processes, maximum = 40.
+
+Create:
+nano mpi3.c
+
+Code:
+#include <stdio.h>
+#include <mpi.h>
+
+int main(int argc, char *argv[]) {
+    int rank, local, maximum;
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    local = (rank + 1) * 10;
+    MPI_Reduce(&local, &maximum, 1, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
+
+    if (rank == 0) {
+        printf("Maximum = %d\\n", maximum);
+    }
+
+    MPI_Finalize();
+    return 0;
+}
+
+Compile and run:
+mpicc mpi3.c -o mpi3 && mpirun --oversubscribe -np 4 ./mpi3
+
+Expected output:
+Maximum = 40
+
+
+SECTION 8: QUICK COMMAND REFERENCE
+----------------------------------
+OpenMP compile: gcc -fopenmp filename.c -o program
+OpenMP run:     ./program
+MPI compile:    mpicc filename.c -o program
+MPI run:        mpirun --oversubscribe -np 4 ./program
+
+

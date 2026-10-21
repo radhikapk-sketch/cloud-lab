@@ -1,0 +1,242 @@
+npm install express mongodb
+
+
+server.js
+-----------------------------------
+const express = require("express");
+const { MongoClient, ObjectId } = require("mongodb");
+
+const app = express();
+const uri = "mongodb+srv://radhika:student12345@cluster1.0ohwm8h.mongodb.net/?appName=Cluster1";
+const client = new MongoClient(uri);
+
+app.use(express.json());
+app.use(express.static("public"));
+
+let students;
+
+async function start() {
+    await client.connect();
+
+    const db = client.db("CollegeDB");
+    students = db.collection("students");
+
+    console.log("MongoDB Atlas connected!");
+
+    app.listen(3000, () => {
+        console.log("Server running at http://localhost:3000");
+    });
+}
+
+app.get("/students", async (req, res) => {
+    res.json(await students.find().toArray());
+});
+
+app.post("/students", async (req, res) => {
+    const result = await students.insertOne(req.body);
+    res.json({ message: "Student added!", id: result.insertedId });
+});
+
+app.put("/students/:id", async (req, res) => {
+    if (!ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({ message: "Invalid student ID" });
+    }
+
+    const result = await students.updateOne(
+        { _id: new ObjectId(req.params.id) },
+        { $set: req.body }
+    );
+
+    res.json({
+        message: result.matchedCount ? "Student updated!" : "Student not found"
+    });
+});
+
+app.delete("/students/:id", async (req, res) => {
+    if (!ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({ message: "Invalid student ID" });
+    }
+
+    const result = await students.deleteOne({
+        _id: new ObjectId(req.params.id)
+    });
+
+    res.json({
+        message: result.deletedCount ? "Student deleted!" : "Student not found"
+    });
+});
+
+start().catch(error => console.error("Startup error:", error));
+-------------------------------------
+index.html
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Management</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #eef2ff;
+            padding: 30px;
+        }
+        .box {
+            background: white;
+            padding: 20px;
+            max-width: 750px;
+            margin: auto;
+            border-radius: 12px;
+        }
+        input {
+            padding: 10px;
+            margin: 5px;
+            width: 90%;
+        }
+        button {
+            padding: 9px 14px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div class="box">
+    <h2>Student Management System</h2>
+
+    <form id="studentForm">
+        <input id="name" placeholder="Enter student name" required>
+        <input id="department" placeholder="Enter department" required>
+        <input id="age" type="number" placeholder="Enter age" required>
+        <button type="submit" id="saveBtn">Add Student</button>
+        <button type="button" onclick="resetForm()">Clear</button>
+    </form>
+
+    <p id="message"></p>
+    <button onclick="loadStudents()">View / Refresh Students</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Age</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="studentList"></tbody>
+    </table>
+</div>
+
+<script>
+let editId = null;
+
+const form = document.getElementById("studentForm");
+const message = document.getElementById("message");
+
+form.onsubmit = async function(e) {
+    e.preventDefault();
+
+    const student = {
+        name: document.getElementById("name").value,
+        department: document.getElementById("department").value,
+        age: Number(document.getElementById("age").value)
+    };
+
+    const url = editId
+        ? "/students/" + editId
+        : "/students";
+
+    const method = editId ? "PUT" : "POST";
+
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(student)
+        });
+
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message);
+
+        message.textContent = result.message;
+        resetForm();
+        loadStudents();
+    } catch (error) {
+        message.textContent = "Error: " + error.message;
+    }
+};
+
+async function loadStudents() {
+    try {
+        const response = await fetch("/students");
+        if (!response.ok) throw new Error("Could not load students");
+
+        const data = await response.json();
+        const list = document.getElementById("studentList");
+        list.innerHTML = "";
+
+        data.forEach(s => {
+            const row = document.createElement("tr");
+
+            [s.name, s.department, s.age].forEach(value => {
+                const cell = document.createElement("td");
+                cell.textContent = value;
+                row.appendChild(cell);
+            });
+
+            const actions = document.createElement("td");
+
+            const edit = document.createElement("button");
+            edit.textContent = "Edit";
+            edit.onclick = () => {
+                editId = s._id;
+                document.getElementById("name").value = s.name;
+                document.getElementById("department").value = s.department;
+                document.getElementById("age").value = s.age;
+                document.getElementById("saveBtn").textContent = "Update Student";
+                message.textContent = "Editing " + s.name;
+            };
+
+            const del = document.createElement("button");
+            del.textContent = "Delete";
+            del.onclick = async () => {
+                if (!confirm("Delete " + s.name + "?")) return;
+
+                const r = await fetch("/students/" + s._id, {
+                    method: "DELETE"
+                });
+                const result = await r.json();
+                message.textContent = result.message;
+                loadStudents();
+            };
+
+            actions.append(edit, del);
+            row.appendChild(actions);
+            list.appendChild(row);
+        });
+    } catch (error) {
+        message.textContent = "Error: " + error.message;
+    }
+}
+
+function resetForm() {
+    form.reset();
+    editId = null;
+    document.getElementById("saveBtn").textContent = "Add Student";
+}
+
+loadStudents();
+</script>
+</body>
+</html>
